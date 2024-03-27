@@ -1,4 +1,4 @@
-package com.example.balatroapp.ui
+package com.example.balatroapp.ui.detail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
