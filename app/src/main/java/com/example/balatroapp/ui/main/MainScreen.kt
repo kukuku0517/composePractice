@@ -1,4 +1,4 @@
-package com.example.balatroapp.ui
+package com.example.balatroapp.ui.main
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
@@ -8,11 +8,11 @@ import androidx.navigation.NavHostController
 import com.example.balatroapp.Screen
 
 @Composable
-fun ListScreen(navController: NavHostController) {
+fun MainScreen(navController: NavHostController) {
     Column {
-        Text(text = "List")
-        Button(onClick = { navController.navigate(Screen.Detail.route) }) {
-            Text(text = "ToDetail")
+        Text(text = "Main")
+        Button(onClick = { navController.navigate(Screen.List.route) }) {
+            Text(text = "ToList")
         }
     }
 }
