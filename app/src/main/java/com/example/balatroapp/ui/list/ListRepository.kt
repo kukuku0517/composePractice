@@ -4,6 +4,7 @@ import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
+import org.jsoup.select.Elements
 import java.security.KeyManagementException
 import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
@@ -42,14 +43,13 @@ class ListRepository @Inject constructor() {
                 val doc = Jsoup.connect(newsUrl).get()// 오래걸림 (0.4초 이상)
                 val rows = doc.select("table.sortable.fandom-table > tbody").select("tr")
                 rows.subList(1, rows.size).mapNotNull {
-                    val number = it.select("td").get(0).text().toInt()
-//                    val url = it.select("td").get(1).select("img").get(0).attr("src")
-                    val url = it.select("td").get(1).select("img").select("img").attr("data-src")
-                    val name = it.select("td").get(1).text()
-                    val cost = it.select("td").get(2).text()
-                    val rarity = it.select("td").get(3).text()
-                    val requirement = it.select("td").get(4).text()
-                    val effect = it.select("td").get(5).text()
+                    val number = it.select("td")[0].text().toInt()
+                    val url = getImageUrl(it.select("td")[1].select("img").select("img"))
+                    val name = it.select("td")[1].text()
+                    val cost = it.select("td")[2].text()
+                    val rarity = it.select("td")[3].text()
+                    val requirement = it.select("td")[5].text()
+                    val effect = it.select("td")[5].text()
 
                     Log.d("kjh", "iomage $name $url")
                     Card(
@@ -64,6 +64,11 @@ class ListRepository @Inject constructor() {
                 listOf()
             }
         }
+    }
+
+    private fun getImageUrl(element: Elements): String {
+        return element[0].attr("src").takeIf { it.startsWith("http") }
+            ?: element.select("img").attr("data-src") ?: ""
     }
 
     @Throws(NoSuchAlgorithmException::class, KeyManagementException::class)
