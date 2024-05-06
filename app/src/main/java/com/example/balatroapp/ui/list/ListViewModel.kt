@@ -31,13 +31,25 @@ class ListViewModel @Inject constructor(
 
     fun onClickWish(wishedCard: Card) {
         viewModelScope.launch {
+            val isWished = wishedCard.isWished
+
+            _state.value = _state.value.copy(
+                cards = _state.value.cards.map { card ->
+                    if (card.name == wishedCard.name) {
+                        card.copy(
+                            isWished = Card.WishedState.LOADING
+                        )
+                    } else {
+                        card
+                    }
+                }
+            )
             delay(1000)
             _state.value = _state.value.copy(
                 cards = _state.value.cards.map { card ->
-                    if (card == wishedCard) {
+                    if (card.name == wishedCard.name) {
                         card.copy(
-                            name = card.name,
-                            isWished = !card.isWished
+                            isWished = isWished.not()
                         )
                     } else {
                         card
@@ -45,19 +57,6 @@ class ListViewModel @Inject constructor(
                 }
             )
         }
-//        _state.to { uiModel ->
-//            uiModel.copy(
-//                cards = uiModel.cards.map { card ->
-//                    if (card == wishedCard) {
-//                        card.copy(
-//                            isWished = !card.isWished
-//                        )
-//                    } else {
-//                        card
-//                    }
-//                }
-//            )
-//        }
     }
 }
 

@@ -4,5 +4,21 @@ data class Card(
     val name: String,
     val imageUrl: String,
     val description: String,
-    val isWished: Boolean = false
-)
+    val isWished: WishedState = WishedState.UNWISHED
+) {
+    enum class WishedState {
+        WISHED,
+        LOADING,
+        UNWISHED;
+
+        fun not(): WishedState {
+            return if (this == WISHED) {
+                UNWISHED
+            } else if (this == UNWISHED) {
+                WISHED
+            } else {
+                LOADING
+            }
+        }
+    }
+}
