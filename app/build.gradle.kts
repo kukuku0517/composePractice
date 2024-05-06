@@ -81,7 +81,9 @@ dependencies {
 
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+    implementation ("androidx.compose.runtime:runtime:1.6.5")
     implementation ("io.coil-kt:coil-compose:2.4.0")
     implementation ("org.jsoup:jsoup:1.14.3")
     implementation ("org.conscrypt:conscrypt-android:2.5.0")
+    implementation ("androidx.work:work-runtime-ktx:2.7.1")
 }
