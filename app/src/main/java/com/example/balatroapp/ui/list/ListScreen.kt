@@ -2,6 +2,7 @@ package com.example.balatroapp.ui.list
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.NavigatorProvider
+import androidx.navigation.navArgument
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.balatroapp.Screen
@@ -63,7 +66,7 @@ fun ListScreen(
         ) {
             LazyColumn {
                 items(state.cards) { card ->
-                    CardItem(card)
+                    CardItem(card, navController)
                 }
             }
             Button(onClick = { navController.navigate(Screen.Detail.route) }) {
@@ -81,29 +84,19 @@ enum class LikeState {
 }
 
 @Composable
-fun CardItem(card: Card) {
+fun CardItem(card: Card, navController: NavHostController? = null) {
     val viewModel = LocalListViewModelProvider.current()
 
     var expanded by remember { mutableStateOf(false) }
-    /*
-    CardItem이 초기화 될때 card값을 기준으로 초기화.
-    이후 card값이 업데이트 되어서 recomposition 되어도 해당 값으로 업데이트 되지 않음 (초기화에만 사용)
-    (아예 view가 새로 생성될 때는 card값 기준으로 적용)
-
-    remember의 목적 자체가 recomposition이 되어도 기억되는 값이기 때문에 이게 맞는 동작이지...
-     */
-    var likeState by remember { mutableStateOf(if (card.isWished) LikeState.LIKED else LikeState.NO_LIKE) }
-
-    //recomposition에도 card 기준으로 업데이트 되도록 호출
-    LaunchedEffect(card.isWished) {
-        likeState = if (card.isWished) LikeState.LIKED else LikeState.NO_LIKE
-    }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp, 4.dp, 8.dp, 4.dp)
             .background(Color.Gray, shape = RoundedCornerShape(8.dp))
+            .clickable {
+                navController?.navigate("${Screen.Detail.route}/${card.linkUrl}")
+            },
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -140,21 +133,21 @@ fun CardItem(card: Card) {
                 )
                 IconButton(
                     onClick = {
-                        likeState = LikeState.LOADING
                         viewModel.onClickWish(card)
                     },
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Icon(
-                        imageVector = when (likeState) {
-                            LikeState.NO_LIKE -> Icons.Default.Favorite
-                            else -> Icons.Default.FavoriteBorder
+                        imageVector = when (card.isWished) {
+                            Card.WishedState.WISHED -> Icons.Default.FavoriteBorder
+                            Card.WishedState.LOADING -> Icons.Default.FavoriteBorder
+                            Card.WishedState.UNWISHED -> Icons.Default.Favorite
                         },
                         contentDescription = "Favorite",
-                        tint = when (likeState) {
-                            LikeState.NO_LIKE -> Color.White
-                            LikeState.LOADING -> Color.Blue
-                            LikeState.LIKED -> Color.Red
+                        tint = when (card.isWished) {
+                            Card.WishedState.WISHED -> Color.Red
+                            Card.WishedState.LOADING -> Color.Blue
+                            Card.WishedState.UNWISHED -> Color.White
                         },
                     )
                 }
@@ -171,6 +164,7 @@ fun CardItemPreview() {
         card = Card(
             name = "Joker",
             description = "This is description",
+            linkUrl = "",
             imageUrl = "https://static.wikia.nocookie.net/balatrogame/images/e/ef/Joker.png/revision/latest/scale-to-width-down/70?cb=20230925003651"
         )
     )
