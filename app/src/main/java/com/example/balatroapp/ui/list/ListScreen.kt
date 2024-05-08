@@ -2,6 +2,7 @@ package com.example.balatroapp.ui.list
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.NavigatorProvider
+import androidx.navigation.navArgument
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.balatroapp.Screen
@@ -63,7 +66,7 @@ fun ListScreen(
         ) {
             LazyColumn {
                 items(state.cards) { card ->
-                    CardItem(card)
+                    CardItem(card, navController)
                 }
             }
             Button(onClick = { navController.navigate(Screen.Detail.route) }) {
@@ -81,7 +84,7 @@ enum class LikeState {
 }
 
 @Composable
-fun CardItem(card: Card) {
+fun CardItem(card: Card, navController: NavHostController? = null) {
     val viewModel = LocalListViewModelProvider.current()
 
     var expanded by remember { mutableStateOf(false) }
@@ -91,6 +94,9 @@ fun CardItem(card: Card) {
             .fillMaxWidth()
             .padding(8.dp, 4.dp, 8.dp, 4.dp)
             .background(Color.Gray, shape = RoundedCornerShape(8.dp))
+            .clickable {
+                navController?.navigate("${Screen.Detail.route}/${card.linkUrl}")
+            },
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -158,6 +164,7 @@ fun CardItemPreview() {
         card = Card(
             name = "Joker",
             description = "This is description",
+            linkUrl = "",
             imageUrl = "https://static.wikia.nocookie.net/balatrogame/images/e/ef/Joker.png/revision/latest/scale-to-width-down/70?cb=20230925003651"
         )
     )

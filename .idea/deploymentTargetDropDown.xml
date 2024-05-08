@@ -5,6 +5,9 @@
       <entry key="CardItemPreview">
         <State />
       </entry>
+      <entry key="DetailSuccessPreview">
+        <State />
+      </entry>
       <entry key="app">
         <State />
       </entry>

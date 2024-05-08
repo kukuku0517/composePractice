@@ -6,9 +6,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.balatroapp.ui.theme.BalatroAppTheme
 import com.example.balatroapp.ui.detail.DetailScreen
 import com.example.balatroapp.ui.list.ListScreen
@@ -43,7 +45,12 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable(Screen.Main.route) { MainScreen(navController) }
                         composable(Screen.List.route) { ListScreen(navController) }
-                        composable(Screen.Detail.route) { DetailScreen(navController) }
+                        composable(
+                            Screen.Detail.route + "/{link}",
+                            arguments = listOf(navArgument("link") { type = NavType.StringType })
+                        ) {
+                            DetailScreen(navController)
+                        }
                     }
                 }
             }

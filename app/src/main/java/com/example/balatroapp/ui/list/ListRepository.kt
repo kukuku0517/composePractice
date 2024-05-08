@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
+import java.net.URLEncoder
 import java.security.KeyManagementException
 import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
@@ -43,18 +44,17 @@ class ListRepository @Inject constructor() {
                 val doc = Jsoup.connect(newsUrl).get()// 오래걸림 (0.4초 이상)
                 val rows = doc.select("table.sortable.fandom-table > tbody").select("tr")
                 rows.subList(1, rows.size).mapNotNull {
-                    val number = it.select("td")[0].text().toInt()
-                    val url = getImageUrl(it.select("td")[1].select("img").select("img"))
+                    val imageUrl = getImageUrl(it.select("td")[1].select("img").select("img"))
+                    val linkUrl = it.select("td")[1].getElementsByAttribute("href")[0].attr("href").let {
+                        URLEncoder.encode(it.replace("wiki/", ""), "UTF-8")
+                    }
                     val name = it.select("td")[1].text()
-                    val cost = it.select("td")[2].text()
-                    val rarity = it.select("td")[3].text()
                     val requirement = it.select("td")[5].text()
-                    val effect = it.select("td")[5].text()
 
-                    Log.d("kjh", "iomage $name $url")
                     Card(
                         name = name,
-                        imageUrl = url,
+                        imageUrl = imageUrl,
+                        linkUrl = linkUrl,
                         description = requirement
                     )
                 }
